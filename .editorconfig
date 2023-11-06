@@ -1,0 +1,46 @@
+root = true
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+
+# C# files
+[*.cs]
+
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+max_line_length = 140
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
+[*]
+
+# Microsoft .NET properties
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_open_brace = all
+csharp_preserve_single_line_blocks = true
+csharp_space_after_cast = false
+
+# ReSharper properties
+resharper_blank_lines_after_control_transfer_statements = 1
+resharper_blank_lines_after_start_comment = 0
+resharper_blank_lines_around_auto_property = 0
+resharper_blank_lines_around_property = 0
+resharper_csharp_anonymous_method_declaration_braces = next_line_shifted_2
+resharper_csharp_blank_lines_around_invocable = 0
+resharper_keep_existing_attribute_arrangement = true
+resharper_keep_existing_declaration_block_arrangement = false
+resharper_keep_existing_enum_arrangement = false
+resharper_place_accessorholder_attribute_on_same_line = true
+resharper_place_expr_accessor_on_single_line = true
+resharper_place_expr_method_on_single_line = false
+resharper_place_expr_property_on_single_line = true
+resharper_place_simple_embedded_statement_on_same_line = true
+resharper_place_simple_initializer_on_single_line = false
+resharper_remove_blank_lines_near_braces_in_code = false
+resharper_remove_blank_lines_near_braces_in_declarations = false
+resharper_wrap_array_initializer_style = chop_always
+resharper_wrap_object_and_collection_initializer_style = chop_always
