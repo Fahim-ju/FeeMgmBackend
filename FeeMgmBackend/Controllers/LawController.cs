@@ -1,8 +1,9 @@
-using API.Entity;
+using FeeMgmBackend.Dtos;
+using FeeMgmBackend.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers;
+namespace FeeMgmBackend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -24,10 +25,18 @@ public class LawController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Law law)
+    public async Task<IActionResult> Post([FromBody] LawDto lawDto)
     {
+        var law = new Law
+        {
+            Name = lawDto.Name,
+            Description = lawDto.Description,
+            Amount = lawDto.Amount
+        };
+        
         await _context.Laws.AddAsync(law);
         await _context.SaveChangesAsync();
+        
         return Ok(law);
     }
 }

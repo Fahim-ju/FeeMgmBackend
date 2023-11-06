@@ -1,3 +1,6 @@
+using FeeMgmBackend;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,7 +23,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Cors policy 
-app.UseCors(builder => builder
+app.UseCors(policyBuilder => policyBuilder
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());

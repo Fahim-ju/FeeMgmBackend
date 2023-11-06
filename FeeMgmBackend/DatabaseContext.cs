@@ -1,7 +1,7 @@
-using API.Entity;
+using FeeMgmBackend.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace API;
+namespace FeeMgmBackend;
 
 public class DatabaseContext : DbContext
 {
