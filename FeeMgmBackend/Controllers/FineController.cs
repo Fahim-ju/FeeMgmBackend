@@ -14,19 +14,28 @@ public class FineController : ControllerBase
         _context = context;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpGet("GetFines")]
+    public async Task<IActionResult> GetFines()
     {
         var fines = await _context.Fines.ToListAsync();
         return Ok(fines);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post(Fine fine)
+    [HttpPost("AddFine")]
+    public async Task<IActionResult> AddFine(Fine fine)
     {
         await _context.Fines.AddAsync(fine);
         await _context.SaveChangesAsync();
         return Ok(fine);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> AddFine(Guid id)
+    {
+        var existingFine = await _context.Fines.FirstOrDefaultAsync(x => x.Id == id);
+        existingFine.IsDeleted = true;
+        _context.Fines.Update(existingFine);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
 }

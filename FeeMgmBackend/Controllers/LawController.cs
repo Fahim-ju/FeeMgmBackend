@@ -9,7 +9,6 @@ namespace FeeMgmBackend.Controllers;
 [Route("[controller]")]
 public class LawController : ControllerBase
 {
-    // inject database context in constructor
     private readonly DatabaseContext _context;
 
     public LawController(DatabaseContext context)
