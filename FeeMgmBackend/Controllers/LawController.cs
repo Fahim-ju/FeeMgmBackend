@@ -11,21 +11,21 @@ public class LawController : ControllerBase
 {
     // inject database context in constructor
     private readonly DatabaseContext _context;
-    
+
     public LawController(DatabaseContext context)
     {
         _context = context;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpGet("GetLaws")]
+    public async Task<IActionResult> GetLaws()
     {
-        var laws = await _context.Laws.ToListAsync();
+        var laws = await _context.Laws.Where(x => !x.IsDeleted).ToListAsync();
         return Ok(laws);
     }
-    
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] LawDto lawDto)
+
+    [HttpPost("AddLaw")]
+    public async Task<IActionResult> AddLaw([FromBody] LawDto lawDto)
     {
         var law = new Law
         {
@@ -33,10 +33,28 @@ public class LawController : ControllerBase
             Description = lawDto.Description,
             Amount = lawDto.Amount
         };
-        
+
         await _context.Laws.AddAsync(law);
         await _context.SaveChangesAsync();
-        
+
         return Ok(law);
+    }
+
+    [HttpPost("UpdateLaw")]
+    public async Task<IActionResult> UpdateLaw([FromBody] Law law)
+    {
+        _context.Laws.Update(law);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteLaw(Guid id)
+    {
+        var existingLaw = await _context.Laws.FirstOrDefaultAsync(x => x.Id == id);
+        existingLaw.IsDeleted = true;
+        _context.Laws.Update(existingLaw);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
 }

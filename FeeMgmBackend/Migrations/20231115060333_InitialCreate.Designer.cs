@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FeeMgmBackend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231106103353_UpdateLaw")]
-    partial class UpdateLaw
+    [Migration("20231115060333_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

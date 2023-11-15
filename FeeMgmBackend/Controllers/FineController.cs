@@ -6,7 +6,7 @@ namespace FeeMgmBackend.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
-public class FineController: ControllerBase
+public class FineController : ControllerBase
 {
     private readonly DatabaseContext _context;
     public FineController(DatabaseContext context)
@@ -15,16 +15,18 @@ public class FineController: ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(){
+    public async Task<IActionResult> Get()
+    {
         var fines = await _context.Fines.ToListAsync();
         return Ok(fines);
     }
 
-   [HttpPost]
-   public async Task<IActionResult> Post(Fine fine){
-          await _context.Fines.AddAsync(fine);
-          await _context.SaveChangesAsync();
-          return Ok(fine);
-      }
-    
+    [HttpPost]
+    public async Task<IActionResult> Post(Fine fine)
+    {
+        await _context.Fines.AddAsync(fine);
+        await _context.SaveChangesAsync();
+        return Ok(fine);
+    }
+
 }
