@@ -15,7 +15,7 @@ public class UserController : ControllerBase
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _context.Users.Where(x => !x.IsDeactivated).ToListAsync();
+        var users = await _context.Users.ToListAsync();
         return Ok(users);
     }
 
