@@ -1,4 +1,6 @@
+using AutoMapper;
 using FeeMgmBackend.Entity;
+using FeeMgmBackend.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace FeeMgmBackend.Controllers;
@@ -8,15 +10,36 @@ namespace FeeMgmBackend.Controllers;
 public class UserController : ControllerBase
 {
     private readonly DatabaseContext _context;
-    public UserController(DatabaseContext context)
+    private readonly IMapper _mapper;
+    public UserController(DatabaseContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
         var users = await _context.Users.ToListAsync();
-        return Ok(users);
+        var usersDto = users.Select(user => _mapper.Map<UserDto>(user)).ToList();
+        var fines = await _context.Fines.ToListAsync();
+        var laws = await _context.Laws.ToListAsync();
+        var payments = await _context.Payments.ToListAsync();
+
+        fines.ForEach(fine =>
+        {
+            var user = usersDto.Find(users => users.Id == fine.UserId); 
+            var law = laws.Find(law =>  law.Id == fine.LawId);
+            user.TotalFine += law.Amount;
+        });
+
+        payments.ForEach(payment =>
+        {
+            var user = usersDto.Find(u => u.Id == payment.UserId);
+            user.Paid += payment.Amount;    
+        });
+        Console.WriteLine("Users vayera ", usersDto);
+        usersDto.ForEach(user => user.Due = user.TotalFine - user.Paid);
+        return Ok(usersDto);
     }
 
     [HttpPost("AddUser")]

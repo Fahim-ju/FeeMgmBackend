@@ -96,8 +96,8 @@ namespace FeeMgmBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
@@ -121,8 +121,11 @@ namespace FeeMgmBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Due")
-                        .HasColumnType("integer");
+                    b.Property<string>("Designation")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeactivated")
                         .HasColumnType("boolean");
@@ -130,11 +133,11 @@ namespace FeeMgmBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("Paid")
-                        .HasColumnType("integer");
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
 
-                    b.Property<int>("TotalFine")
-                        .HasColumnType("integer");
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FeeMgmBackend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231115060333_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231201064711_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,23 +93,42 @@ namespace FeeMgmBackend.Migrations
                     b.ToTable("Laws");
                 });
 
+            modelBuilder.Entity("FeeMgmBackend.Entity.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("FeeMgmBackend.Entity.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Due")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsDeactivated")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
-
-                    b.Property<int>("Paid")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TotalFine")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -131,6 +150,17 @@ namespace FeeMgmBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Law");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FeeMgmBackend.Entity.Payment", b =>
+                {
+                    b.HasOne("FeeMgmBackend.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

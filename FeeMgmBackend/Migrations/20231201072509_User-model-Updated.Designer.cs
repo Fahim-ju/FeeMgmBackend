@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FeeMgmBackend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231130114758_payment-table-added")]
-    partial class paymenttableadded
+    [Migration("20231201072509_User-model-Updated")]
+    partial class UsermodelUpdated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,8 +99,8 @@ namespace FeeMgmBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Amount")
-                        .HasColumnType("uuid");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
@@ -124,8 +124,11 @@ namespace FeeMgmBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Due")
-                        .HasColumnType("integer");
+                    b.Property<string>("Designation")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeactivated")
                         .HasColumnType("boolean");
@@ -133,11 +136,11 @@ namespace FeeMgmBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("Paid")
-                        .HasColumnType("integer");
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
 
-                    b.Property<int>("TotalFine")
-                        .HasColumnType("integer");
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

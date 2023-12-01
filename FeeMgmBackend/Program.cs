@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddAutoMapper(typeof(Program));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

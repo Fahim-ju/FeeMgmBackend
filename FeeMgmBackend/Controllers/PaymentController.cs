@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FeeMgmBackend.Controllers
 {
-    [Route("controller")]
+    [Route("[controller]")]
     [ApiController]
     public class PaymentController : ControllerBase
     {
@@ -26,13 +26,6 @@ namespace FeeMgmBackend.Controllers
         public async Task< IActionResult> AddPayment(Payment payment)
         {
             await _context.Payments.AddAsync(payment);
-            var user = _context.Users.FirstOrDefaultAsync(x => x.Id == payment.UserId).Result;
-            if(user != null)
-            {
-                user.Due -= payment.Amount;
-                user.Paid += payment.Amount;
-                _context.Users.Update(user);
-            }
             await _context.SaveChangesAsync();
             return Ok(payment);
         }
