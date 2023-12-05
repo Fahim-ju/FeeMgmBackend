@@ -1,3 +1,5 @@
+using AutoMapper;
+using FeeMgmBackend.Dtos;
 using FeeMgmBackend.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,16 +11,33 @@ namespace FeeMgmBackend.Controllers;
 public class FineController : ControllerBase
 {
     private readonly DatabaseContext _context;
-    public FineController(DatabaseContext context)
+    private readonly IMapper _mapper;
+    public FineController(DatabaseContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [HttpGet("GetFines")]
     public async Task<IActionResult> GetFines()
     {
         var fines = await _context.Fines.ToListAsync();
-        return Ok(fines);
+        var users = await _context.Users.ToListAsync(); 
+        var laws = await _context.Laws.ToListAsync();
+
+        
+        List<FineDto> fineList = new List<FineDto>();
+
+        foreach (var fine in fines)
+        {
+            var fn = _mapper.Map<FineDto>(fine);
+            fn.UserName = users.Find(user => user.Id == fine.UserId).Name;
+            Law law = laws.Find(law => law.Id == fine.LawId);
+            fn.LawName = law.Name;
+            fn.Amount = law.Amount;
+            fineList.Add(fn);
+        }
+        return Ok(fineList);
     }
 
     [HttpPost("AddFine")]

@@ -37,7 +37,6 @@ public class UserController : ControllerBase
             var user = usersDto.Find(u => u.Id == payment.UserId);
             user.Paid += payment.Amount;    
         });
-        Console.WriteLine("Users vayera ", usersDto);
         usersDto.ForEach(user => user.Due = user.TotalFine - user.Paid);
         return Ok(usersDto);
     }
