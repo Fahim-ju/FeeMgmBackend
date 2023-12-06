@@ -24,22 +24,22 @@ namespace FeeMgmBackend.Services
             }
             return records;
         }
-            
 
 
-    private List<object> GetRow(ExcelWorksheet worksheet, int row, int columns, List<int> skippedIndex)
-    {
-        List<object> rowData = new List<object>();
-        for (int j = 1; j <= columns; j++)
+
+        private List<object> GetRow(ExcelWorksheet worksheet, int row, int columns, List<int> skippedIndex)
         {
-            if (row == 1 && (worksheet.Cells[row, j] == null || string.IsNullOrEmpty(worksheet.Cells[row, j].Text))) skippedIndex.Add(j);
+            List<object> rowData = new List<object>();
+            for (int j = 1; j <= columns; j++)
+            {
+                if (row == 1 && (worksheet.Cells[row, j] == null || string.IsNullOrEmpty(worksheet.Cells[row, j].Text))) skippedIndex.Add(j);
 
-            if (skippedIndex.Contains(j)) continue;
+                if (skippedIndex.Contains(j)) continue;
 
-            object content = worksheet.Cells[row, j].Text;
-            rowData.Add(content);
+                object content = worksheet.Cells[row, j].Text;
+                rowData.Add(content);
+            }
+            return rowData;
         }
-        return rowData;
     }
-}
 }

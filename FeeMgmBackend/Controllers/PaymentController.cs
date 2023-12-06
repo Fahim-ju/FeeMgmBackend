@@ -35,7 +35,7 @@ namespace FeeMgmBackend.Controllers
         }
 
         [HttpPost("AddPayment")]
-        public async Task< IActionResult> AddPayment(Payment payment)
+        public async Task<IActionResult> AddPayment(Payment payment)
         {
             await _context.Payments.AddAsync(payment);
             await _context.SaveChangesAsync();

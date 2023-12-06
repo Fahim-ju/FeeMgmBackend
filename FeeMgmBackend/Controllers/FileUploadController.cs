@@ -17,20 +17,20 @@ namespace FeeMgmBackend.Controllers
             _context = dbContext;
         }
         [HttpPost("FineFileUpload")]
-        public async Task< IActionResult> AnalyzeFineExcelFile(IFormFile file)
+        public async Task<IActionResult> AnalyzeFineExcelFile(IFormFile file)
         {
             var streamFile = file.OpenReadStream();
             var excelService = new ExcelService();
             var records = excelService.ParseExcel(streamFile);
             var rows = records.Count;
-            var col = rows>0? records[0].Count: 0;
-            for(int i = 1; i<rows; i++)
+            var col = rows > 0 ? records[0].Count : 0;
+            for (int i = 1; i < rows; i++)
             {
-                string userName="",lawName="";
-                decimal amount=0;
+                string userName = "", lawName = "";
+                decimal amount = 0;
                 DateTime date;
 
-                for(int j = 0; j<col; j++)
+                for (int j = 0; j < col; j++)
                 {
                     switch (j)
                     {
@@ -43,7 +43,7 @@ namespace FeeMgmBackend.Controllers
                                 if (records[i][j].ToString().Length > 0)
                                     amount = decimal.Parse(records[i][j].ToString());
                                 else amount = 0;
-                
+
                             }
                             catch (FormatException ex)
                             {
@@ -57,26 +57,27 @@ namespace FeeMgmBackend.Controllers
                             Console.WriteLine("Implement paid - payment status");
                             break;
                         case 4:
-                            date = records[i][j].ToString().Length> 0? DateTime.Parse(records[i][j].ToString()) : DateTime.Now;
+                            date = records[i][j].ToString().Length > 0 ? DateTime.Parse(records[i][j].ToString()) : DateTime.Now;
                             break;
-                            
+
                     }
                 }
-                User user =  await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
 
-                if(user == null)
+                if (user == null)
                 {
                     user = new User();
                     user.Name = userName;
                     await _context.Users.AddAsync(user);
                     await _context.SaveChangesAsync();
-                }else if (user.IsDeactivated)
+                }
+                else if (user.IsDeactivated)
                 {
                     user.IsDeactivated = false;
                     _context.Users.Update(user);
                 }
                 Law law = await _context.Laws.FirstOrDefaultAsync(l => l.Name == lawName);
-                if(law==null)
+                if (law == null)
                 {
                     law = new Law();
                     law.Name = lawName;
@@ -84,7 +85,8 @@ namespace FeeMgmBackend.Controllers
                     law.IsDeleted = false;
                     await _context.Laws.AddAsync(law);
                     await _context.SaveChangesAsync();
-                }else if(law.IsDeleted)
+                }
+                else if (law.IsDeleted)
                 {
                     law.IsDeleted = false;
                     _context.Laws.Update(law);
@@ -108,7 +110,7 @@ namespace FeeMgmBackend.Controllers
             var records = excelService.ParseExcel(streamFile);
             var rows = records.Count;
             var cols = rows > 0 ? records[0].Count : 0;
-            for(int i=1; i<rows; i++)
+            for (int i = 1; i < rows; i++)
             {
                 string userName = "";
                 decimal amount = 0;
@@ -135,7 +137,7 @@ namespace FeeMgmBackend.Controllers
                             break;
                     }
                 }
-                User user = await _context.Users.FirstOrDefaultAsync( u => u.Name == userName);
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
                 Payment payment = new Payment();
                 payment.Amount = amount;
                 payment.UserId = user.Id;

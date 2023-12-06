@@ -22,10 +22,10 @@ public class FineController : ControllerBase
     public async Task<IActionResult> GetFines()
     {
         var fines = await _context.Fines.ToListAsync();
-        var users = await _context.Users.ToListAsync(); 
+        var users = await _context.Users.ToListAsync();
         var laws = await _context.Laws.ToListAsync();
 
-        
+
         List<FineDto> fineList = new List<FineDto>();
 
         foreach (var fine in fines)

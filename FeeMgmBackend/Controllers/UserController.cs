@@ -16,6 +16,7 @@ public class UserController : ControllerBase
         _context = context;
         _mapper = mapper;
     }
+
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
@@ -27,15 +28,15 @@ public class UserController : ControllerBase
 
         fines.ForEach(fine =>
         {
-            var user = usersDto.Find(users => users.Id == fine.UserId); 
-            var law = laws.Find(law =>  law.Id == fine.LawId);
+            var user = usersDto.Find(users => users.Id == fine.UserId);
+            var law = laws.Find(law => law.Id == fine.LawId);
             user.TotalFine += law.Amount;
         });
 
         payments.ForEach(payment =>
         {
             var user = usersDto.Find(u => u.Id == payment.UserId);
-            user.Paid += payment.Amount;    
+            user.Paid += payment.Amount;
         });
         usersDto.ForEach(user => user.Due = user.TotalFine - user.Paid);
         return Ok(usersDto);

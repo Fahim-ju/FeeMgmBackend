@@ -6,8 +6,9 @@ namespace FeeMgmBackend.Config
 {
     public class MapperConfig : Profile
     {
-        public MapperConfig() { 
-            CreateMap<UserDto, User>().ReverseMap(); 
+        public MapperConfig()
+        {
+            CreateMap<UserDto, User>().ReverseMap();
             CreateMap<FineDto, Fine>().ReverseMap();
             CreateMap<PaymentDto, Payment>().ReverseMap();
         }
