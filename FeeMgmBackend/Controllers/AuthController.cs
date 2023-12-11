@@ -1,25 +1,24 @@
 ﻿using FeeMgmBackend.Models;
 using FeeMgmBackend.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeeMgmBackend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthenticationController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly ILogger<AuthenticationController> _logger;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthenticationController(IAuthService authService, ILogger<AuthenticationController> logger)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
             _logger = logger;
         }
 
         [HttpPost("login")]
-        public async Task< IActionResult > Login(LoginModel loginModel)
+        public async Task<IActionResult> Login(LoginModel loginModel)
         {
             try
             {
@@ -43,16 +42,16 @@ namespace FeeMgmBackend.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest("Invalid Payload");
                 var (status, message) = await _authService.Registration(registrationModel, UserRoles.Admin);
-                if(status == 0)
+                if (status == 0)
                 {
                     return BadRequest(message);
                 }
                 return CreatedAtAction(nameof(Register), registrationModel);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);    
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FeeMgmBackend.Services;
 using Microsoft.EntityFrameworkCore;
-using FeeMgmBackend.Dtos;
 using FeeMgmBackend.Entity;
 
 namespace FeeMgmBackend.Controllers
