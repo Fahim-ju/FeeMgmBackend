@@ -23,12 +23,12 @@ namespace FeeMgmBackend.Controllers
         public async Task<IActionResult> GetPayments()
         {
             var payments = await _context.Payments.ToListAsync();
-            var users = await _context.Users.ToListAsync();
+            var members = await _context.Members.ToListAsync();
             List<PaymentDto> result = new List<PaymentDto>();
             foreach (var pay in payments)
             {
                 var paymentDto = _mapper.Map<PaymentDto>(pay);
-                paymentDto.UserName = users.Find(user => user.Id == pay.UserId).Name;
+                paymentDto.UserName = members.Find(x => x.Id == pay.MemberId).Name;
                 result.Add(paymentDto);
             }
             return Ok(result);

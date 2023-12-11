@@ -62,19 +62,19 @@ namespace FeeMgmBackend.Controllers
 
                     }
                 }
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
+                Member member = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
 
-                if (user == null)
+                if (member == null)
                 {
-                    user = new User();
-                    user.Name = userName;
-                    await _context.Users.AddAsync(user);
+                    member = new Member();
+                    member.Name = userName;
+                    await _context.Members.AddAsync(member);
                     await _context.SaveChangesAsync();
                 }
-                else if (user.IsDeactivated)
+                else if (member.IsDeactivated)
                 {
-                    user.IsDeactivated = false;
-                    _context.Users.Update(user);
+                    member.IsDeactivated = false;
+                    _context.Members.Update(member);
                 }
                 Law law = await _context.Laws.FirstOrDefaultAsync(l => l.Name == lawName);
                 if (law == null)
@@ -93,9 +93,9 @@ namespace FeeMgmBackend.Controllers
                 }
                 Fine fine = new Fine();
                 var existingLaw = await _context.Laws.FirstOrDefaultAsync(l => l.Name == lawName);
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
+                var existingMember = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
                 fine.LawId = existingLaw.Id;
-                fine.UserId = existingUser.Id;
+                fine.MemberId = existingMember.Id;
                 await _context.Fines.AddAsync(fine);
                 await _context.SaveChangesAsync();
             }
@@ -112,7 +112,7 @@ namespace FeeMgmBackend.Controllers
             var cols = rows > 0 ? records[0].Count : 0;
             for (int i = 1; i < rows; i++)
             {
-                string userName = "";
+                string memberName = "";
                 decimal amount = 0;
 
                 for (int j = 0; j < cols; j++)
@@ -120,7 +120,7 @@ namespace FeeMgmBackend.Controllers
                     switch (j)
                     {
                         case 0:
-                            userName = records[i][j].ToString();
+                            memberName = records[i][j].ToString();
                             break;
                         case 1:
                             try
@@ -137,10 +137,10 @@ namespace FeeMgmBackend.Controllers
                             break;
                     }
                 }
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
+                Member user = await _context.Members.FirstOrDefaultAsync(u => u.Name == memberName);
                 Payment payment = new Payment();
                 payment.Amount = amount;
-                payment.UserId = user.Id;
+                payment.MemberId = user.Id;
                 await _context.AddAsync(payment);
                 await _context.SaveChangesAsync();
             }

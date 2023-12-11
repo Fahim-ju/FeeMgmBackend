@@ -22,7 +22,7 @@ public class FineController : ControllerBase
     public async Task<IActionResult> GetFines()
     {
         var fines = await _context.Fines.ToListAsync();
-        var users = await _context.Users.ToListAsync();
+        var members = await _context.Members.ToListAsync();
         var laws = await _context.Laws.ToListAsync();
 
 
@@ -31,7 +31,7 @@ public class FineController : ControllerBase
         foreach (var fine in fines)
         {
             var fn = _mapper.Map<FineDto>(fine);
-            fn.UserName = users.Find(user => user.Id == fine.UserId).Name;
+            fn.UserName = members.Find(member => member.Id == fine.MemberId).Name;
             Law law = laws.Find(law => law.Id == fine.LawId);
             fn.LawName = law.Name;
             fn.Amount = law.Amount;

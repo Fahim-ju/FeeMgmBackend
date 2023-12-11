@@ -2,7 +2,7 @@
 
 namespace FeeMgmBackend.Dtos
 {
-    public class UserDto : User
+    public class MemberDto : Member
     {
         public decimal TotalFine { get; set; }
         public decimal Paid { get; set; }
