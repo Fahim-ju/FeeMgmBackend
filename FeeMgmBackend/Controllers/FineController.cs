@@ -1,6 +1,7 @@
 using AutoMapper;
 using FeeMgmBackend.Dtos;
 using FeeMgmBackend.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ namespace FeeMgmBackend.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
+[Authorize(Roles = "Admin")]
+
 public class FineController : ControllerBase
 {
     private readonly DatabaseContext _context;
