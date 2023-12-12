@@ -1,4 +1,6 @@
-﻿using FeeMgmBackend.Models;
+﻿using AutoMapper;
+using FeeMgmBackend.Dtos;
+using FeeMgmBackend.Models;
 using FeeMgmBackend.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +14,13 @@ namespace FeeMgmBackend.Controllers
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public AuthController(IAuthService authService, ILogger<AuthController> logger, UserManager<ApplicationUser> userManager)
+        private readonly IMapper _mapper;
+        public AuthController(IAuthService authService, ILogger<AuthController> logger, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _authService = authService;
             _logger = logger;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -30,7 +33,9 @@ namespace FeeMgmBackend.Controllers
                 var (status, message) = await _authService.Login(loginModel);
                 if (status == 0)
                     return BadRequest(message);
-                return Ok(message);
+                var applicationUser = await _userManager.FindByNameAsync(loginModel.Username);
+                var authUser = _mapper.Map<AuthUserDto>(applicationUser);
+                return Ok(new { Message = message, User = authUser });
             }
             catch (Exception ex)
             {
