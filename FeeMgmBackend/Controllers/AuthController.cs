@@ -1,5 +1,6 @@
 ﻿using FeeMgmBackend.Models;
 using FeeMgmBackend.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeeMgmBackend.Controllers
@@ -10,11 +11,13 @@ namespace FeeMgmBackend.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger, UserManager<ApplicationUser> userManager)
         {
             _authService = authService;
             _logger = logger;
+            _userManager = userManager;
         }
 
         [HttpPost("login")]
@@ -35,6 +38,7 @@ namespace FeeMgmBackend.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         [HttpPost("registration")]
         public async Task<IActionResult> Register(RegistrationModel registrationModel)
         {
@@ -47,6 +51,21 @@ namespace FeeMgmBackend.Controllers
                     return BadRequest(message);
                 }
                 return CreatedAtAction(nameof(Register), registrationModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("GetProfile")]
+        public async Task<IActionResult> GetProfile(string userName)
+        {
+            try
+            {
+                var applicationUser = await _userManager.FindByNameAsync(userName);
+                return Ok(applicationUser);
             }
             catch (Exception ex)
             {
