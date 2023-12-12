@@ -70,7 +70,8 @@ namespace FeeMgmBackend.Controllers
             try
             {
                 var applicationUser = await _userManager.FindByNameAsync(userName);
-                return Ok(applicationUser);
+                var authUser = _mapper.Map<AuthUserDto>(applicationUser);
+                return Ok(authUser);
             }
             catch (Exception ex)
             {
