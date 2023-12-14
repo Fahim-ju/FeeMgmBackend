@@ -9,7 +9,6 @@ namespace FeeMgmBackend.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
-[Authorize(Roles = "Admin")]
 public class FineController : ControllerBase
 {
     private readonly DatabaseContext _context;
