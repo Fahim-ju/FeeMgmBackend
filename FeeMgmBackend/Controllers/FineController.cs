@@ -35,7 +35,6 @@ public class FineController : ControllerBase
             fn.UserName = members.Find(member => member.Id == fine.MemberId).Name;
             Law law = laws.Find(law => law.Id == fine.LawId);
             fn.LawName = law.Name;
-            fn.Amount = law.Amount;
             fineList.Add(fn);
         }
         return Ok(fineList);
