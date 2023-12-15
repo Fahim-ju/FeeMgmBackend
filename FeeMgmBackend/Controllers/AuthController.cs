@@ -35,6 +35,8 @@ namespace FeeMgmBackend.Controllers
                     return BadRequest(message);
                 var applicationUser = await _userManager.FindByNameAsync(loginModel.Username);
                 var authUser = _mapper.Map<AuthUserDto>(applicationUser);
+                var Roles = await _userManager.GetRolesAsync(applicationUser);
+                if(Roles.Count > 0) authUser.Role = Roles.First();
                 return Ok(new { Message = message, User = authUser });
             }
             catch (Exception ex)
@@ -71,6 +73,8 @@ namespace FeeMgmBackend.Controllers
             {
                 var applicationUser = await _userManager.FindByNameAsync(userName);
                 var authUser = _mapper.Map<AuthUserDto>(applicationUser);
+                var Roles = await _userManager.GetRolesAsync(applicationUser);
+                if (Roles.Count > 0) authUser.Role = Roles.First();
                 return Ok(authUser);
             }
             catch (Exception ex)
