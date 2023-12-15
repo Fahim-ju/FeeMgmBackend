@@ -6,6 +6,7 @@ public class Fine
 
     public Guid LawId { get; set; }
     public Law Law { get; set; }
+    public decimal amount { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

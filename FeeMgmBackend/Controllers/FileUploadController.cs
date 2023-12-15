@@ -21,14 +21,14 @@ namespace FeeMgmBackend.Controllers
             var streamFile = file.OpenReadStream();
             var excelService = new ExcelService();
             var records = excelService.ParseExcel(streamFile);
+            Console.WriteLine(records);
             var rows = records.Count;
             var col = rows > 0 ? records[0].Count : 0;
             for (int i = 1; i < rows; i++)
             {
                 string userName = "", lawName = "";
                 decimal amount = 0;
-                DateTime date;
-
+                DateTime date = DateTime.Now;
                 for (int j = 0; j < col; j++)
                 {
                     switch (j)
@@ -61,6 +61,7 @@ namespace FeeMgmBackend.Controllers
 
                     }
                 }
+                if (amount == 0 || userName.Length == 0) continue;
                 Member member = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
 
                 if (member == null)
@@ -95,6 +96,7 @@ namespace FeeMgmBackend.Controllers
                 var existingMember = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
                 fine.LawId = existingLaw.Id;
                 fine.MemberId = existingMember.Id;
+                fine.amount = amount;
                 await _context.Fines.AddAsync(fine);
                 await _context.SaveChangesAsync();
             }

@@ -30,8 +30,7 @@ public class UserController : ControllerBase
         fines.ForEach(fine =>
         {
             var member = membersDto.Find(member => member.Id == fine.MemberId);
-            var law = laws.Find(law => law.Id == fine.LawId);
-            member.TotalFine += law.Amount;
+            member.TotalFine += fine.amount;
         });
 
         payments.ForEach(payment =>
