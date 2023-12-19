@@ -12,6 +12,6 @@
         public string PhoneNumber { get; set; } 
         public Boolean PhoneNumberConfirmed { get; set;}
         public decimal AccessFailedCount { get; set; }  
-      
+        public string Role { get; set; }
     }
 }

@@ -21,25 +21,33 @@ public class UserController : ControllerBase
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetMembers()
     {
-        var members = await _context.Members.ToListAsync();
-        var membersDto = members.Select(user => _mapper.Map<MemberDto>(user)).ToList();
-        var fines = await _context.Fines.ToListAsync();
-        var laws = await _context.Laws.ToListAsync();
-        var payments = await _context.Payments.ToListAsync();
-
-        fines.ForEach(fine =>
+        try
         {
-            var member = membersDto.Find(member => member.Id == fine.MemberId);
-            member.TotalFine += fine.amount;
-        });
+            var members = await _context.Members.ToListAsync();
+            var membersDto = members.Select(user => _mapper.Map<MemberDto>(user)).ToList();
+            var fines = await _context.Fines.ToListAsync();
+            var laws = await _context.Laws.ToListAsync();
+            var payments = await _context.Payments.ToListAsync();
 
-        payments.ForEach(payment =>
+            fines.ForEach(fine =>
+            {
+                var member = membersDto.Find(member => member.Id == fine.MemberId);
+                member.TotalFine += fine.amount;
+            });
+
+            payments.ForEach(payment =>
+            {
+                var user = membersDto.Find(u => u.Id == payment.MemberId);
+                user.Paid += payment.Amount;
+            });
+            membersDto.ForEach(user => user.Due = user.TotalFine - user.Paid);
+            return Ok(membersDto);
+        }
+        catch (Exception ex)
         {
-            var user = membersDto.Find(u => u.Id == payment.MemberId);
-            user.Paid += payment.Amount;
-        });
-        membersDto.ForEach(user => user.Due = user.TotalFine - user.Paid);
-        return Ok(membersDto);
+
+            throw new Exception(ex.Message);
+        }
     }
 
     [HttpPost("AddUser")]
