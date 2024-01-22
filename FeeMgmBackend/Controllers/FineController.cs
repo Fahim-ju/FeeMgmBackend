@@ -1,9 +1,7 @@
-using AutoMapper;
-using FeeMgmBackend.Dtos;
 using FeeMgmBackend.Entity;
-using Microsoft.AspNetCore.Authorization;
+using FeeMgmBackend.IService;
+using FeeMgmBackend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FeeMgmBackend.Controllers;
 
@@ -11,50 +9,55 @@ namespace FeeMgmBackend.Controllers;
 [Route("[Controller]")]
 public class FineController : ControllerBase
 {
-    private readonly DatabaseContext _context;
-    private readonly IMapper _mapper;
-    public FineController(DatabaseContext context, IMapper mapper)
+    private readonly IFineService _fineService;
+    
+    public FineController(IFineService fineService)
     {
-        _context = context;
-        _mapper = mapper;
+        _fineService = fineService;
     }
 
     [HttpGet("GetFines")]
-    public async Task<IActionResult> GetFines()
+    public async Task<IActionResult> GetFinesAsync()
     {
-        var fines = await _context.Fines.ToListAsync();
-        var members = await _context.Members.ToListAsync();
-        var laws = await _context.Laws.ToListAsync();
-
-
-        List<FineDto> fineList = new List<FineDto>();
-
-        foreach (var fine in fines)
+        try
         {
-            var fn = _mapper.Map<FineDto>(fine);
-            fn.UserName = members.Find(member => member.Id == fine.MemberId).Name;
-            Law law = laws.Find(law => law.Id == fine.LawId);
-            fn.LawName = law.Name;
-            fineList.Add(fn);
+            var fines = await _fineService.GetFinesAsync();
+            return Ok(fines);
         }
-        return Ok(fineList);
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpPost("AddFine")]
-    public async Task<IActionResult> AddFine(Fine fine)
+    public async Task<IActionResult> AddAsync(Fine fine)
     {
-        await _context.Fines.AddAsync(fine);
-        await _context.SaveChangesAsync();
-        return Ok(fine);
+        try
+        {
+            await _fineService.AddAsync(fine);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> AddFine(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        var existingFine = await _context.Fines.FirstOrDefaultAsync(x => x.Id == id);
-        existingFine.IsDeleted = true;
-        _context.Fines.Update(existingFine);
-        await _context.SaveChangesAsync();
-        return Ok();
+        try
+        {
+            await _fineService.DeleteAsync(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

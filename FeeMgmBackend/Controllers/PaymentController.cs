@@ -1,45 +1,47 @@
-﻿using AutoMapper;
-using FeeMgmBackend.Dtos;
-using FeeMgmBackend.Entity;
+﻿using FeeMgmBackend.Entity;
+using FeeMgmBackend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace FeeMgmBackend.Controllers
+namespace FeeMgmBackend.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class PaymentController : ControllerBase
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class PaymentController : ControllerBase
+    private readonly IPaymentService _paymentService;
+
+    public PaymentController(IPaymentService paymentService)
     {
-        private readonly DatabaseContext _context;
-        private readonly IMapper _mapper;
+        _paymentService = paymentService;
+    }
 
-        public PaymentController(DatabaseContext context, IMapper mapper)
+    [HttpGet("GetPayments")]
+    public async Task<IActionResult> IndexAsync()
+    {
+        try
         {
-            _context = context;
-            _mapper = mapper;
+            var payments = await _paymentService.IndexAsync();
+            return Ok(payments);
         }
-
-        [HttpGet("GetPayments")]
-        public async Task<IActionResult> GetPayments()
+        catch (Exception e)
         {
-            var payments = await _context.Payments.ToListAsync();
-            var members = await _context.Members.ToListAsync();
-            List<PaymentDto> result = new List<PaymentDto>();
-            foreach (var pay in payments)
-            {
-                var paymentDto = _mapper.Map<PaymentDto>(pay);
-                paymentDto.UserName = members.Find(x => x.Id == pay.MemberId).Name;
-                result.Add(paymentDto);
-            }
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    [HttpPost("AddPayment")]
+    public async Task<IActionResult> AddAsync(Payment payment)
+    {
+        try
+        {
+            var result = await _paymentService.AddAsync(payment);
             return Ok(result);
         }
-
-        [HttpPost("AddPayment")]
-        public async Task<IActionResult> AddPayment(Payment payment)
+        catch (Exception e)
         {
-            await _context.Payments.AddAsync(payment);
-            await _context.SaveChangesAsync();
-            return Ok(payment);
+            Console.WriteLine(e);
+            throw;
         }
     }
 }

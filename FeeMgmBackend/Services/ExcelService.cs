@@ -1,8 +1,9 @@
-﻿using OfficeOpenXml;
+﻿using FeeMgmBackend.IService;
+using OfficeOpenXml;
 
 namespace FeeMgmBackend.Services
 {
-    public class ExcelService
+    public class ExcelService : IExcelService
     {
         public ExcelService() { }
         public List<List<object>> ParseExcel(Stream file)
@@ -26,8 +27,7 @@ namespace FeeMgmBackend.Services
         }
 
 
-
-        private List<object> GetRow(ExcelWorksheet worksheet, int row, int columns, List<int> skippedIndex)
+        public List<object> GetRow(ExcelWorksheet worksheet, int row, int columns, List<int> skippedIndex)
         {
             List<object> rowData = new List<object>();
             for (int j = 1; j <= columns; j++)
