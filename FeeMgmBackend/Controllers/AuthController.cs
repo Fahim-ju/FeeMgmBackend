@@ -15,6 +15,7 @@ namespace FeeMgmBackend.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
+        
         public AuthController(IAuthService authService, ILogger<AuthController> logger, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _authService = authService;
@@ -28,15 +29,21 @@ namespace FeeMgmBackend.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest("Invalid Payload");
+                if (!ModelState.IsValid) return BadRequest("Invalid Payload");
+                
                 var (status, message) = await _authService.Login(loginModel);
-                if (status == 0)
-                    return BadRequest(message);
+                
+                if (status == 0) return BadRequest(message);
+                
                 var applicationUser = await _userManager.FindByNameAsync(loginModel.Username);
+                if (applicationUser == null) return BadRequest("Invalid Username");
+                
                 var authUser = _mapper.Map<AuthUserDto>(applicationUser);
+                
                 var Roles = await _userManager.GetRolesAsync(applicationUser);
+                
                 if(Roles.Count > 0) authUser.Role = Roles.First();
+                
                 return Ok(new { Message = message, User = authUser });
             }
             catch (Exception ex)
@@ -52,7 +59,9 @@ namespace FeeMgmBackend.Controllers
             try
             {
                 if (!ModelState.IsValid) return BadRequest("Invalid Payload");
+                
                 var (status, message) = await _authService.Registration(registrationModel, UserRoles.User);
+                
                 if (status == 0)
                 {
                     return BadRequest(message);
@@ -72,9 +81,12 @@ namespace FeeMgmBackend.Controllers
             try
             {
                 var applicationUser = await _userManager.FindByNameAsync(userName);
+                if (applicationUser == null) return BadRequest("Invalid Username");
+                
                 var authUser = _mapper.Map<AuthUserDto>(applicationUser);
                 var Roles = await _userManager.GetRolesAsync(applicationUser);
                 if (Roles.Count > 0) authUser.Role = Roles.First();
+                
                 return Ok(authUser);
             }
             catch (Exception ex)

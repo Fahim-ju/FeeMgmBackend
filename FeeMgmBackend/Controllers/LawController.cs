@@ -1,5 +1,6 @@
 using FeeMgmBackend.Dtos;
 using FeeMgmBackend.Entity;
+using FeeMgmBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,51 +10,77 @@ namespace FeeMgmBackend.Controllers;
 [Route("[controller]")]
 public class LawController : ControllerBase
 {
-    private readonly DatabaseContext _context;
+    private readonly ILawService _lawService;
 
-    public LawController(DatabaseContext context)
+    public LawController(ILawService lawService)
     {
-        _context = context;
+        _lawService = lawService;
     }
 
     [HttpGet("GetLaws")]
-    public async Task<IActionResult> GetLaws()
+    public async Task<IActionResult> IndexAsync()
     {
-        var laws = await _context.Laws.Where(x => !x.IsDeleted).ToListAsync();
-        return Ok(laws);
+        try
+        {
+            var laws = await _lawService.IndexAsync();
+            return Ok(laws);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpPost("AddLaw")]
-    public async Task<IActionResult> AddLaw([FromBody] LawDto lawDto)
+    public async Task<IActionResult> AddAsync([FromBody] LawDto lawDto)
     {
-        var law = new Law
+        try
         {
-            Name = lawDto.Name,
-            Description = lawDto.Description,
-            Amount = lawDto.Amount
-        };
+            var law = new Law
+            {
+                Name = lawDto.Name,
+                Description = lawDto.Description,
+                IsDeleted = false
+            };
 
-        await _context.Laws.AddAsync(law);
-        await _context.SaveChangesAsync();
-
-        return Ok(law);
+            var data = await _lawService.AddAsync(law);
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpPost("UpdateLaw")]
-    public async Task<IActionResult> UpdateLaw([FromBody] Law law)
+    public async Task<IActionResult> UpdateAsync([FromBody] Law law)
     {
-        _context.Laws.Update(law);
-        await _context.SaveChangesAsync();
-        return Ok();
+        try
+        {
+            await _lawService.UpdateAsync(law);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteLaw(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        var existingLaw = await _context.Laws.FirstOrDefaultAsync(x => x.Id == id);
-        existingLaw.IsDeleted = true;
-        _context.Laws.Update(existingLaw);
-        await _context.SaveChangesAsync();
-        return Ok();
+        try
+        {
+            await _lawService.DeleteAsync(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }
