@@ -3,6 +3,8 @@ using FeeMgmBackend.Entity;
 using FeeMgmBackend.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using FeeMgmBackend.Models;
 
 namespace FeeMgmBackend.Controllers;
 
@@ -12,10 +14,13 @@ public class UserController : ControllerBase
 {
     private readonly DatabaseContext _context;
     private readonly IMapper _mapper;
-    public UserController(DatabaseContext context, IMapper mapper)
+    private readonly RoleManager<IdentityRole> _roleManager;
+
+    public UserController(DatabaseContext context, IMapper mapper, RoleManager<IdentityRole> roleManager)
     {
         _context = context;
         _mapper = mapper;
+        _roleManager = roleManager;
     }
 
     [HttpGet("GetUsers")]
@@ -28,6 +33,8 @@ public class UserController : ControllerBase
             var fines = await _context.Fines.ToListAsync();
             var laws = await _context.Laws.ToListAsync();
             var payments = await _context.Payments.ToListAsync();
+
+            var applicationUserRoles = await _roleManager.Roles.ToListAsync();
 
             fines.ForEach(fine =>
             {
@@ -89,4 +96,18 @@ public class UserController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(member);
     }
+
+    [HttpPost("AddRole")]
+    public async Task<IActionResult> AddRole(string roleName)
+    {
+        IdentityRole role = new IdentityRole
+        {
+            Name = roleName,
+            NormalizedName = roleName.ToUpper()
+        };
+        await _roleManager.CreateAsync(role);
+        return Ok(role);
+    }
+
+
 }
