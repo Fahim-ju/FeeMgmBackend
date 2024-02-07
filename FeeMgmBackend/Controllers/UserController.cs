@@ -81,4 +81,12 @@ public class UserController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(member);
     }
+
+    [HttpPost("UpdateUserRole")]
+    public async Task<IActionResult> UpdateUserRole(Member member)
+    {
+        var user = _context.Members.Update(member);
+        await _context.SaveChangesAsync();
+        return Ok(member);
+    }
 }
