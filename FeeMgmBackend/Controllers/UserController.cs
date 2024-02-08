@@ -15,12 +15,14 @@ public class UserController : ControllerBase
     private readonly DatabaseContext _context;
     private readonly IMapper _mapper;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public UserController(DatabaseContext context, IMapper mapper, RoleManager<IdentityRole> roleManager)
+    public UserController(DatabaseContext context, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _mapper = mapper;
         _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     [HttpGet("GetUsers")]
@@ -54,6 +56,22 @@ public class UserController : ControllerBase
         {
 
             throw new Exception(ex.Message);
+        }
+    }
+
+    [HttpGet("GetAplplicationUsers")]
+    public async Task <IActionResult> GetUsers ()
+    {
+        try
+        {
+            var users = await _userManager.Users.ToListAsync();
+            var usersDto = users.Select(user => _mapper.Map<UserDto>(user)).ToList();
+
+            return Ok(usersDto);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
     }
 

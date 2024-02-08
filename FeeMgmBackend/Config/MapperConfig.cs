@@ -13,6 +13,7 @@ namespace FeeMgmBackend.Config
             CreateMap<FineDto, Fine>().ReverseMap();
             CreateMap<PaymentDto, Payment>().ReverseMap();
             CreateMap<AuthUserDto, ApplicationUser>().ReverseMap();
+            CreateMap<ApplicationUser, UserDto>().ReverseMap();
         }
     }
 }
