@@ -91,6 +91,14 @@ public class UserController : ControllerBase
         return Ok(member);
     }
 
+    [HttpPost("UpdateUserName")]
+    public async Task<IActionResult> UpdateUserName(Member member)
+    {
+        _context.Members.Update(member);
+        await _context.SaveChangesAsync();
+        return Ok(member);
+    }
+
     [HttpPost("ActivateUser")]
     public async Task<IActionResult> ActivateUser(Member member)
     {
