@@ -49,7 +49,19 @@ public class UserController : ControllerBase
                 var user = membersDto.Find(u => u.Id == payment.MemberId);
                 user.Paid += payment.Amount;
             });
-            membersDto.ForEach(user => user.Due = user.TotalFine - user.Paid);
+
+            foreach (var memberDto in membersDto)
+            {
+                var user = await _userManager.FindByIdAsync(memberDto.ApplicationUserId.ToString());
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    memberDto.Roles = roles.ToList();
+                }
+
+                memberDto.Due = memberDto.TotalFine - memberDto.Paid;
+            }
+
             return Ok(membersDto);
         }
         catch (Exception ex)
@@ -60,7 +72,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("GetAplplicationUsers")]
-    public async Task <IActionResult> GetUsers ()
+    public async Task<IActionResult> GetUsers()
     {
         try
         {
@@ -99,6 +111,32 @@ public class UserController : ControllerBase
         return Ok(member);
     }
 
+    [HttpPost("UpdateUserRole")]
+    public async Task<IActionResult> UpdateUserRole(UpdateUserRoleDto updateUserRoleDto)
+    {
+        var user = await _userManager.FindByIdAsync(updateUserRoleDto.UserId);
+
+        if (user == null)
+        {
+            return NotFound("User Not Found");
+        }
+
+        var existingRoles = await _userManager.GetRolesAsync(user);
+        var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+
+        if (result.Succeeded)
+        {
+            result = await _userManager.AddToRoleAsync(user, updateUserRoleDto.NewRole);
+            if (result.Succeeded)
+            {
+                return Ok("User role updated successfully");
+            }
+        }
+
+        return BadRequest("Failed to update user role");
+
+    }
+
     [HttpPost("ActivateUser")]
     public async Task<IActionResult> ActivateUser(Member member)
     {
@@ -115,13 +153,13 @@ public class UserController : ControllerBase
         return Ok(member);
     }
 
-    [HttpPost("UpdateUserRole")]
-    public async Task<IActionResult> UpdateUserRole(Member member)
-    {
-        var user = _context.Members.Update(member);
-        await _context.SaveChangesAsync();
-        return Ok(member);
-    }
+    /* [HttpPost("UpdateUserRole")]
+     public async Task<IActionResult> UpdateUserRole(Member member)
+     {
+         var user = _context.Members.Update(member);
+         await _context.SaveChangesAsync();
+         return Ok(member);
+     }*/
 
     [HttpPost("AddRole")]
     public async Task<IActionResult> AddRole(string roleName)

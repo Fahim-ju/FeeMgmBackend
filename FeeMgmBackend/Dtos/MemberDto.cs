@@ -7,5 +7,7 @@ namespace FeeMgmBackend.Dtos
         public decimal TotalFine { get; set; }
         public decimal Paid { get; set; }
         public decimal Due { get; set; }
+        public Guid ApplicationUserId { get; set; }
+        public List<string> Roles { get; set; }
     }
 }

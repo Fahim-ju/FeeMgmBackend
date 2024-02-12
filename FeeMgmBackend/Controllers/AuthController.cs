@@ -60,7 +60,7 @@ namespace FeeMgmBackend.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest("Invalid Payload");
                 
-                var (status, message) = await _authService.Registration(registrationModel, UserRoles.User);
+                var (status, message) = await _authService.Registration(registrationModel, UserRoles.Admin);
                 
                 if (status == 0)
                 {
