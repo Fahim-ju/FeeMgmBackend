@@ -62,6 +62,10 @@ public class UserController : ControllerBase
                 memberDto.Due = memberDto.TotalFine - memberDto.Paid;
             }
 
+           /* membersDto.ForEach(async user => 
+            {
+                user.Due = user.TotalFine - user.Paid;
+            });*/
             return Ok(membersDto);
         }
         catch (Exception ex)
@@ -111,8 +115,8 @@ public class UserController : ControllerBase
         return Ok(member);
     }
 
-    [HttpPost("UpdateUserRole")]
-    public async Task<IActionResult> UpdateUserRole(UpdateUserRoleDto updateUserRoleDto)
+    [HttpPost ("UpdateUserRole")]
+    public async Task<IActionResult> UpdateUserRole (UpdateUserRoleDto updateUserRoleDto)
     {
         var user = await _userManager.FindByIdAsync(updateUserRoleDto.UserId);
 
@@ -153,13 +157,13 @@ public class UserController : ControllerBase
         return Ok(member);
     }
 
-    /* [HttpPost("UpdateUserRole")]
-     public async Task<IActionResult> UpdateUserRole(Member member)
-     {
-         var user = _context.Members.Update(member);
-         await _context.SaveChangesAsync();
-         return Ok(member);
-     }*/
+   /* [HttpPost("UpdateUserRole")]
+    public async Task<IActionResult> UpdateUserRole(Member member)
+    {
+        var user = _context.Members.Update(member);
+        await _context.SaveChangesAsync();
+        return Ok(member);
+    }*/
 
     [HttpPost("AddRole")]
     public async Task<IActionResult> AddRole(string roleName)
