@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using FeeMgmBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FeeMgmBackend.Controllers;
 
@@ -62,10 +63,6 @@ public class UserController : ControllerBase
                 memberDto.Due = memberDto.TotalFine - memberDto.Paid;
             }
 
-           /* membersDto.ForEach(async user => 
-            {
-                user.Due = user.TotalFine - user.Paid;
-            });*/
             return Ok(membersDto);
         }
         catch (Exception ex)
@@ -90,6 +87,28 @@ public class UserController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+    [HttpGet("GetUserRoleById/{userId}")]
+    public async Task<IActionResult> GetUserRoleById(string userId)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound(new { error = "User not found" });
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new { UserId = user.Id, Roles = roles });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
 
     [HttpPost("AddUser")]
     public async Task<IActionResult> AddMember(Member member)
