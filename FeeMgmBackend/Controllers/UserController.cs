@@ -87,6 +87,8 @@ public class UserController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+
     [HttpGet("GetUserRoleById/{userId}")]
     public async Task<IActionResult> GetUserRoleById(string userId)
     {
@@ -126,6 +128,34 @@ public class UserController : ControllerBase
         return Ok(member);
     }
 
+    [HttpPost("ChangeUserRole")]
+    public async Task<IActionResult> ChangeUserRole(UpdateUserRoleDto payload)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(payload.UserId);
+
+            if (user == null)
+            {
+                return NotFound(new { error = "User not found" });
+            }
+
+            // Remove existing roles
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, existingRoles);
+
+            // Add the new role
+            await _userManager.AddToRoleAsync(user, payload.selectedRole);
+
+            return Ok(new { UserId = user.Id, Roles = new List<string> { payload.selectedRole } });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+
     [HttpPost("UpdateUserName")]
     public async Task<IActionResult> UpdateUserName(Member member)
     {
@@ -133,32 +163,7 @@ public class UserController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(member);
     }
-
-    [HttpPost ("UpdateUserRole")]
-    public async Task<IActionResult> UpdateUserRole (UpdateUserRoleDto updateUserRoleDto)
-    {
-        var user = await _userManager.FindByIdAsync(updateUserRoleDto.UserId);
-
-        if (user == null)
-        {
-            return NotFound("User Not Found");
-        }
-
-        var existingRoles = await _userManager.GetRolesAsync(user);
-        var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
-
-        if (result.Succeeded)
-        {
-            result = await _userManager.AddToRoleAsync(user, updateUserRoleDto.NewRole);
-            if (result.Succeeded)
-            {
-                return Ok("User role updated successfully");
-            }
-        }
-
-        return BadRequest("Failed to update user role");
-
-    }
+   
 
     [HttpPost("ActivateUser")]
     public async Task<IActionResult> ActivateUser(Member member)
@@ -175,14 +180,6 @@ public class UserController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(member);
     }
-
-   /* [HttpPost("UpdateUserRole")]
-    public async Task<IActionResult> UpdateUserRole(Member member)
-    {
-        var user = _context.Members.Update(member);
-        await _context.SaveChangesAsync();
-        return Ok(member);
-    }*/
 
     [HttpPost("AddRole")]
     public async Task<IActionResult> AddRole(string roleName)
