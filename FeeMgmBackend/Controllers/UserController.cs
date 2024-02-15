@@ -163,7 +163,7 @@ public class UserController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(member);
     }
-   
+
 
     [HttpPost("ActivateUser")]
     public async Task<IActionResult> ActivateUser(Member member)

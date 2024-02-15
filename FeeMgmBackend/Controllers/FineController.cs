@@ -1,6 +1,5 @@
 using FeeMgmBackend.Entity;
 using FeeMgmBackend.IService;
-using FeeMgmBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeeMgmBackend.Controllers;
@@ -10,7 +9,7 @@ namespace FeeMgmBackend.Controllers;
 public class FineController : ControllerBase
 {
     private readonly IFineService _fineService;
-    
+
     public FineController(IFineService fineService)
     {
         _fineService = fineService;

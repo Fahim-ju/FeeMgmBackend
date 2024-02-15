@@ -19,7 +19,7 @@ namespace FeeMgmBackend.Controllers
             try
             {
                 var result = await _fileUploadService.AnalyzeFineExcelFileAsync(file.OpenReadStream());
-           
+
                 return Ok(result);
             }
             catch (Exception e)
@@ -27,7 +27,7 @@ namespace FeeMgmBackend.Controllers
                 Console.WriteLine(e);
                 throw;
             }
-          
+
         }
 
         [HttpPost("PaymentFileUpload")]
@@ -43,7 +43,7 @@ namespace FeeMgmBackend.Controllers
                 Console.WriteLine(e);
                 throw;
             }
-           
+
         }
     }
 }

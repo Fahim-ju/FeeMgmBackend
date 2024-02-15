@@ -9,9 +9,9 @@
         public string NormalizedUserName { get; set; }
         public string Email { get; set; }
         public Boolean EmailConfirmed { get; set; }
-        public string PhoneNumber { get; set; } 
-        public Boolean PhoneNumberConfirmed { get; set;}
-        public decimal AccessFailedCount { get; set; }  
+        public string PhoneNumber { get; set; }
+        public Boolean PhoneNumberConfirmed { get; set; }
+        public decimal AccessFailedCount { get; set; }
         public string Role { get; set; }
     }
 }

@@ -15,14 +15,14 @@ public class PaymentService : IPaymentService
         _context = context;
         _mapper = mapper;
     }
-    
+
     public async Task<List<PaymentDto>> IndexAsync()
     {
         var payments = await _context.Payments.ToListAsync();
         var members = await _context.Members.ToListAsync();
-        
+
         var result = new List<PaymentDto>();
-        
+
         foreach (var pay in payments)
         {
             var paymentDto = _mapper.Map<PaymentDto>(pay);
@@ -31,12 +31,12 @@ public class PaymentService : IPaymentService
         }
         return result;
     }
-    
+
     public async Task<Payment> AddAsync(Payment payment)
     {
         await _context.Payments.AddAsync(payment);
         await _context.SaveChangesAsync();
         return payment;
     }
-    
+
 }

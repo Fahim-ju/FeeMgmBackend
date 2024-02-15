@@ -27,7 +27,7 @@ public class FineService : IFineService
         foreach (var fine in fines)
         {
             var fn = _mapper.Map<FineDto>(fine);
-            
+
             fn.UserName = members.Find(member => member.Id == fine.MemberId).Name;
             var law = laws.Find(law => law.Id == fine.LawId);
             fn.LawName = law.Name;
@@ -42,12 +42,12 @@ public class FineService : IFineService
         await _context.Fines.AddAsync(fine);
         await _context.SaveChangesAsync();
     }
-    
+
     public async Task DeleteAsync(Guid id)
     {
         var existingFine = await _context.Fines.FirstOrDefaultAsync(x => x.Id == id);
         existingFine.IsDeleted = true;
-        
+
         _context.Fines.Update(existingFine);
         await _context.SaveChangesAsync();
     }
