@@ -24,6 +24,17 @@ public class FileUploadService : IFileUploadService
         {
             string userName = "", lawName = "";
             decimal amount = 0;
+            DateTime fineDate;
+
+            if (DateTime.TryParseExact(records[i][4]?.ToString(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
+            {
+                fineDate = DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc);
+            }
+            else
+            {
+                fineDate = DateTime.UtcNow;
+            }
+
             for (var j = 0; j < col; j++)
             {
                 switch (j)
@@ -58,45 +69,66 @@ public class FileUploadService : IFileUploadService
 
             if (userName != null && (amount == 0 || userName.Length == 0)) continue;
 
-            var member = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
+            var existingFine = await _context.Fines
+                .Include(f => f.Law)
+                .Include(f => f.Member)
+                .FirstOrDefaultAsync(f =>
+                    f.Member.Name == userName &&
+                    f.Law.Name == lawName &&
+                    f.FineDate == fineDate &&
+                    f.amount == amount);
 
-            if (member == null)
+            if (existingFine != null)
             {
-                member = new Member();
-                member.Name = userName;
-                await _context.Members.AddAsync(member);
+                existingFine.amount = amount;
                 await _context.SaveChangesAsync();
             }
-            else if (member.IsDeactivated)
-            {
-                member.IsDeactivated = false;
-                _context.Members.Update(member);
-            }
 
-            var law = await _context.Laws.FirstOrDefaultAsync(l => l.Name == lawName);
-            if (law == null)
+            else
             {
-                law = new Law();
-                law.Name = lawName;
-                law.Amount = amount;
-                law.IsDeleted = false;
-                await _context.Laws.AddAsync(law);
+                var member = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
+                var law = await _context.Laws.FirstOrDefaultAsync(l => l.Name == lawName);
+
+                if (member == null)
+                {
+                    member = new Member();
+                    member.Name = userName;
+                    await _context.Members.AddAsync(member);
+                    await _context.SaveChangesAsync();
+                }
+                else if (member.IsDeactivated)
+                {
+                    member.IsDeactivated = false;
+                    _context.Members.Update(member);
+                }
+
+                if (law == null)
+                {
+                    law = new Law();
+                    law.Name = lawName;
+                    law.Amount = amount;
+                    law.IsDeleted = false;
+                    await _context.Laws.AddAsync(law);
+                    await _context.SaveChangesAsync();
+                }
+
+                else if (law.IsDeleted)
+                {
+                    law.IsDeleted = false;
+                    _context.Laws.Update(law);
+                }
+
+                var newFine = new Fine
+                {
+                    LawId = law.Id,
+                    MemberId = member.Id,
+                    amount = amount,
+                    FineDate = fineDate
+                };
+
+                await _context.Fines.AddAsync(newFine);
                 await _context.SaveChangesAsync();
             }
-            else if (law.IsDeleted)
-            {
-                law.IsDeleted = false;
-                _context.Laws.Update(law);
-            }
-
-            var fine = new Fine();
-            var existingLaw = await _context.Laws.FirstOrDefaultAsync(l => l.Name == lawName);
-            var existingMember = await _context.Members.FirstOrDefaultAsync(u => u.Name == userName);
-            fine.LawId = existingLaw.Id;
-            fine.MemberId = existingMember.Id;
-            fine.amount = amount;
-            await _context.Fines.AddAsync(fine);
-            await _context.SaveChangesAsync();
         }
 
         return records;
@@ -126,7 +158,6 @@ public class FileUploadService : IFileUploadService
                             if (records[i][j].ToString().Length > 0)
                                 amount = decimal.Parse(records[i][j].ToString());
                             else amount = 0;
-
                         }
                         catch (FormatException ex)
                         {

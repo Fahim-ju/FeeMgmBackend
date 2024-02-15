@@ -19,4 +19,5 @@ public class Fine
 
     public Guid MemberId { get; set; }
     public Member Member { get; set; }
+    public DateTime FineDate { get; set; }
 }

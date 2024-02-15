@@ -9,4 +9,5 @@ public class Member
     public string Phone { get; set; }
     public string Designation { get; set; }
     public bool IsDeactivated { get; set; }
+    public Guid? ApplicationUserId { get; set; }
 }
